@@ -1,0 +1,71 @@
+package com.agena.report.gxt.client.view;
+
+import java.util.List;
+
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.ui.IsWidget;
+import com.google.gwt.user.client.ui.Widget;
+import com.google.web.bindery.autobean.shared.AutoBean;
+import com.google.web.bindery.autobean.shared.AutoBean.PropertyName;
+import com.google.web.bindery.autobean.shared.AutoBeanFactory;
+import com.sencha.gxt.core.client.ValueProvider;
+import com.sencha.gxt.data.shared.PropertyAccess;
+import com.sencha.gxt.data.shared.loader.ListLoadConfig;
+import com.sencha.gxt.data.shared.loader.ListLoadResult;
+import com.sencha.gxt.data.shared.loader.ListLoader;
+import com.sencha.gxt.widget.core.client.ContentPanel;
+import com.sencha.gxt.widget.core.client.grid.Grid;
+
+public class ManageReportWidget implements IsWidget
+{
+	private String title;
+	
+	private ContentPanel mainPanel;
+	
+	private ListLoader<ListLoadConfig, ListLoadResult<ReportInfo>> loader;
+	private Grid<ReportInfo> grid;	
+	
+	interface XmlAutoBeanFactory extends AutoBeanFactory 
+	{    
+		static XmlAutoBeanFactory instance = GWT.create(XmlAutoBeanFactory.class);     
+		AutoBean<ReportInfoCollection> items();     
+		AutoBean<ListLoadConfig> loadConfig();   
+	}	
+	
+	interface ReportInfo 
+	{    
+		@PropertyName("fileName") String getFileName();     
+		@PropertyName("createdDate") String getCreatedDate();      
+	}
+	
+	interface ReportInfoCollection 
+	{    
+		@PropertyName("ReportInfo") List<ReportInfo> getValues();  
+	}
+	
+	interface ReportInfoProperties extends PropertyAccess<ReportInfo> 
+	{     
+		ValueProvider<ReportInfo, String> fileName();     
+		ValueProvider<ReportInfo, String> createdDate();  
+	}	
+	
+	
+	public ManageReportWidget(String title) { this.title = title; }	
+	
+	public Widget asWidget() 
+	{
+		if (mainPanel == null)
+		{
+			mainPanel = new ContentPanel();			
+			mainPanel.setBodyBorder(false);
+			mainPanel.setBorders(false);			
+			mainPanel.setPixelSize(800, 600);				
+			mainPanel.setHeadingText(title);			
+		}
+		
+		return mainPanel; 
+	}
+	
+	public void setWidgetTitle(String title) { mainPanel.setHeadingText(title); }
+	public void reset()  { }	
+}

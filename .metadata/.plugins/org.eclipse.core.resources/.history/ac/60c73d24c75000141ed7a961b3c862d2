@@ -1,0 +1,207 @@
+package com.agena.report.gxt.client.view;
+
+import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.IsWidget;
+import com.google.gwt.user.client.ui.RadioButton;
+import com.google.gwt.user.client.ui.Widget;
+import com.sencha.gxt.core.client.util.Margins;
+import com.sencha.gxt.widget.core.client.ContentPanel;
+import com.sencha.gxt.widget.core.client.button.ButtonBar;
+import com.sencha.gxt.widget.core.client.button.TextButton;
+import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer;
+import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
+import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer.BorderLayoutData;
+import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
+import com.sencha.gxt.widget.core.client.event.SelectEvent;
+import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
+import com.sencha.gxt.widget.core.client.form.FieldLabel;
+import com.sencha.gxt.widget.core.client.form.TextField;
+
+public class RetrieveReportDataWidget implements IsWidget
+{
+	private String title;
+	
+	private ContentPanel mainPanel;
+	
+	private TextField txtFieldCustomerId;
+	private TextField txtFieldProjectId;
+	private TextField txtFieldPlateId;
+	private TextField txtFieldExperimentId;
+	private TextField txtFieldChipId;
+	private TextField txtFieldStatus;	
+	
+	public RetrieveReportDataWidget(String title) { this.title = title; }
+	
+	public Widget asWidget() 
+	{
+		if (mainPanel == null)
+		{
+			mainPanel = new ContentPanel();
+			
+			mainPanel = new ContentPanel();			
+			mainPanel.setBodyBorder(false);
+			mainPanel.setBorders(false);			
+			mainPanel.setPixelSize(400, 600);				
+			mainPanel.setHeadingText(title);
+
+			final BorderLayoutContainer layout = new BorderLayoutContainer();
+			mainPanel.add(layout);			
+			
+			// Layout - Center
+			final ContentPanel centerPanel = new ContentPanel();
+			centerPanel.setHeadingText("Request");
+			BorderLayoutData centerDataLayout = new BorderLayoutData(150);
+			centerDataLayout.setMargins(new Margins(10, 10, 10, 10));
+			centerPanel.setLayoutData(centerDataLayout);
+			layout.setCenterWidget(centerPanel);
+			
+			final VerticalLayoutContainer centerLayout = new VerticalLayoutContainer();
+			centerLayout.setBorders(false);
+			centerLayout.getElement().getStyle().setBackgroundColor("white");
+			centerPanel.add(centerLayout);				    
+		    
+			// 1. customer ID
+		    txtFieldCustomerId = new TextField(); 
+		    txtFieldCustomerId.setAllowBlank(false);
+			centerLayout.add(new FieldLabel(txtFieldCustomerId, "Customer ID"), new VerticalLayoutData(1, -1));
+
+			// 2. project ID
+			txtFieldProjectId = new TextField(); 
+			txtFieldProjectId.setAllowBlank(false);
+			centerLayout.add(new FieldLabel(txtFieldProjectId, "Project ID"), new VerticalLayoutData(1, -1));
+				
+			// 3. plate ID
+			txtFieldPlateId = new TextField(); 
+			txtFieldPlateId.setAllowBlank(false);
+			centerLayout.add(new FieldLabel(txtFieldPlateId, "Plate ID"), new VerticalLayoutData(1, -1));		
+			
+			// 4. experiment ID
+			txtFieldExperimentId = new TextField(); 
+			txtFieldExperimentId.setAllowBlank(false);
+			centerLayout.add(new FieldLabel(txtFieldExperimentId, "Experiment ID"), new VerticalLayoutData(1, -1));			
+			
+			// 5. chip ID
+			txtFieldChipId = new TextField(); 
+			txtFieldChipId.setAllowBlank(false);
+			centerLayout.add(new FieldLabel(txtFieldChipId, "Chip ID"), new VerticalLayoutData(1, -1));			
+			
+			// Layout - South
+			ContentPanel southPanel = new ContentPanel();
+			southPanel.setHeadingText("Response");
+			BorderLayoutData southDataLayout = new BorderLayoutData(150);
+			southDataLayout.setMargins(new Margins(5, 5, 5, 5));
+			centerPanel.setLayoutData(southDataLayout);		
+			layout.setSouthWidget(southPanel);
+
+			final VerticalLayoutContainer southLayout = new VerticalLayoutContainer();
+			
+			txtFieldStatus = new TextField(); 
+			southLayout.add(new FieldLabel(txtFieldStatus, "Response"), new VerticalLayoutData(1, -1));
+			southPanel.add(southLayout);		
+			
+			final ButtonBar buttonBar = new ButtonBar();
+			buttonBar.setMinButtonWidth(75);
+			buttonBar.getElement().setMargins(10);				
+			
+			buttonBar.add(new TextButton("Submit", new SelectHandler()
+			{
+				@Override
+				public void onSelect(SelectEvent event) 
+				{
+					// processSubmit();
+				}
+			}));
+
+			buttonBar.add(new TextButton("Reset", new SelectHandler()
+			{
+				@Override
+				public void onSelect(SelectEvent event) { reset(); }
+			}));	
+		
+			centerLayout.add(buttonBar, new VerticalLayoutData(1, -1));				
+		}
+		
+		return mainPanel; 
+	}
+	
+	public Widget asWidget_SAVE() 
+	{
+		if (mainPanel == null)
+		{
+			mainPanel = new ContentPanel();
+			
+			mainPanel = new ContentPanel();			
+			mainPanel.setBodyBorder(false);
+			mainPanel.setBorders(false);			
+			mainPanel.setPixelSize(400, 600);				
+			mainPanel.setHeadingText(title);
+						
+			final VerticalLayoutContainer centerLayout = new VerticalLayoutContainer();
+			centerLayout.setBorders(false);
+			centerLayout.getElement().getStyle().setBackgroundColor("white");
+			mainPanel.add(centerLayout);				    
+		    
+			// 2. customer ID
+			txtFieldCustomerId = new TextField(); 
+		    txtFieldCustomerId.setAllowBlank(false);
+		    centerLayout.add(new FieldLabel(txtFieldCustomerId, "Customer ID"), new VerticalLayoutData(1, -1));
+
+			// 3. project ID
+			txtFieldProjectId = new TextField(); 
+			txtFieldProjectId.setAllowBlank(false);
+			centerLayout.add(new FieldLabel(txtFieldProjectId, "Project ID"), new VerticalLayoutData(1, -1));			
+
+			// 4. plate ID
+			txtFieldPlateId = new TextField(); 
+			txtFieldPlateId.setAllowBlank(false);
+			centerLayout.add(new FieldLabel(txtFieldPlateId, "Plate ID"), new VerticalLayoutData(1, -1));		
+			
+			// 5. experiment ID
+			txtFieldExperimentId = new TextField(); 
+			txtFieldExperimentId.setAllowBlank(false);
+			centerLayout.add(new FieldLabel(txtFieldExperimentId, "Experiment ID"), new VerticalLayoutData(1, -1));			
+			
+			// 6. chip ID
+			txtFieldChipId = new TextField(); 
+			txtFieldChipId.setAllowBlank(false);
+			centerLayout.add(new FieldLabel(txtFieldChipId, "Chip ID"), new VerticalLayoutData(1, -1));
+			
+			final VerticalLayoutContainer southLayout = new VerticalLayoutContainer();
+			
+			txtFieldStatus = new TextField(); 
+			southLayout.add(new FieldLabel(txtFieldStatus, "Status"), new VerticalLayoutData(1, -1));
+			centerLayout.add(southLayout);				
+			
+			final ButtonBar buttonBar = new ButtonBar();
+			buttonBar.setMinButtonWidth(75);
+			buttonBar.getElement().setMargins(10);
+					
+			buttonBar.add(new TextButton("Submit", new SelectHandler()
+			{
+				@Override
+				public void onSelect(SelectEvent event) { }
+			}));
+
+			buttonBar.add(new TextButton("Reset", new SelectHandler()
+			{
+				@Override
+				public void onSelect(SelectEvent event) { }
+			}));		
+			
+			centerLayout.add(buttonBar, new VerticalLayoutData(1, -1));		
+		}
+		
+		return mainPanel; 
+	}	
+	
+	public void setWidgetTitle(String title) { mainPanel.setHeadingText(title); }
+	public void reset() 
+	{ 
+		txtFieldCustomerId.clear();
+		txtFieldProjectId.clear();
+		txtFieldPlateId.clear();
+		txtFieldExperimentId.clear();
+		txtFieldChipId.clear();
+		txtFieldStatus.clear();
+	}	
+}

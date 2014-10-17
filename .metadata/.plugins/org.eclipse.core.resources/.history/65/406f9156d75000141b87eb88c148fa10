@@ -1,0 +1,162 @@
+package com.agena.report.gxt.client.view;
+
+import static com.agena.report.gxt.client.model.Constants.DATA_SERVICE_URL;
+import static com.agena.report.gxt.client.util.DisplayUtil.displayError;
+
+import com.agena.report.gxt.client.model.GenerateReportSummaryDataRequestVO;
+import com.agena.report.gxt.client.model.GenerateReportSummaryDataResponseVO;
+import com.google.gwt.http.client.Request;
+import com.google.gwt.http.client.RequestBuilder;
+import com.google.gwt.http.client.RequestCallback;
+import com.google.gwt.http.client.Response;
+import com.google.gwt.user.client.ui.HasHorizontalAlignment;
+import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.IsWidget;
+import com.google.gwt.user.client.ui.Widget;
+import com.sencha.gxt.core.client.util.Margins;
+import com.sencha.gxt.widget.core.client.ContentPanel;
+import com.sencha.gxt.widget.core.client.button.ButtonBar;
+import com.sencha.gxt.widget.core.client.button.TextButton;
+import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer;
+import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer.BorderLayoutData;
+import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
+import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
+import com.sencha.gxt.widget.core.client.event.SelectEvent;
+import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
+import com.sencha.gxt.widget.core.client.form.FieldLabel;
+import com.sencha.gxt.widget.core.client.form.TextField;
+
+public class GenerateReportDataWidget implements IsWidget
+{
+	private String title;
+	private String reportType;	
+	
+	private ContentPanel mainPanel;
+	
+	private TextField txtFieldDataFilePath;
+	private TextField txtFieldStatus;	
+	
+	public GenerateReportDataWidget(String title, String reportType)  
+	{  
+		this.title = title;
+		this.reportType = reportType;
+	}	
+	
+	public Widget asWidget() 
+	{
+		if (mainPanel == null)
+		{
+			mainPanel = new ContentPanel();			
+			mainPanel.setBodyBorder(false);
+			mainPanel.setBorders(false);			
+			mainPanel.setPixelSize(800, 300);				
+			mainPanel.setHeadingText(title);							
+
+			final BorderLayoutContainer layout = new BorderLayoutContainer();
+			mainPanel.add(layout);
+			
+			// Layout - Center
+			final ContentPanel centerPanel = new ContentPanel();
+			centerPanel.setHeadingText("Request");
+			BorderLayoutData centerDataLayout = new BorderLayoutData(150);
+			centerDataLayout.setMargins(new Margins(10, 10, 10, 10));
+			centerPanel.setLayoutData(centerDataLayout);
+			layout.setCenterWidget(centerPanel);
+			
+			final VerticalLayoutContainer centerLayout = new VerticalLayoutContainer();
+			centerLayout.setBorders(false);
+			centerLayout.getElement().getStyle().setBackgroundColor("white");
+			centerPanel.add(centerLayout);			    
+		    
+			// 2. customer ID
+			txtFieldDataFilePath = new TextField(); 
+			txtFieldDataFilePath.setAllowBlank(false);
+			centerLayout.add(new FieldLabel(txtFieldDataFilePath, "Data File"), new VerticalLayoutData(1, -1));			
+						
+			final ButtonBar buttonBar = new ButtonBar();
+			buttonBar.setMinButtonWidth(75);
+			buttonBar.getElement().setMargins(600);			
+			
+			buttonBar.add(new TextButton("Submit", new SelectHandler()
+			{
+				@Override
+				public void onSelect(SelectEvent event) 
+				{
+					processSubmit();
+				}
+			}));
+
+			buttonBar.add(new TextButton("Reset", new SelectHandler()
+			{
+				@Override
+				public void onSelect(SelectEvent event)  { reset(); }
+			}));
+			
+			
+			centerLayout.add(buttonBar, new VerticalLayoutData(1, -1));			
+			
+			// Layout - South
+			ContentPanel southPanel = new ContentPanel();
+			southPanel.setHeadingText("Response");
+			BorderLayoutData southDataLayout = new BorderLayoutData(150);
+			southDataLayout.setMargins(new Margins(5, 5, 5, 5));
+			centerPanel.setLayoutData(southDataLayout);		
+			layout.setSouthWidget(southPanel);
+
+			final VerticalLayoutContainer southLayout = new VerticalLayoutContainer();
+			
+			txtFieldStatus = new TextField(); 
+			southLayout.add(new FieldLabel(txtFieldStatus, "Status"), new VerticalLayoutData(1, -1));
+			southPanel.add(southLayout);					
+		}
+		
+		return mainPanel; 		
+	}	
+	
+	private void processSubmit()
+	{
+		final GenerateReportSummaryDataRequestVO requestVO = new GenerateReportSummaryDataRequestVO(reportType, txtFieldDataFilePath.getText());						
+		sendRequest(requestVO.toXML());						
+	}	
+	
+	private void sendRequest(String requestData)
+	{
+		final String path = DATA_SERVICE_URL + "/generateData/summary/"; 
+		
+		final RequestBuilder builder = new RequestBuilder(RequestBuilder.POST, path);  
+		try 
+		{   
+			builder.setHeader("Content-Type", "application/xml");    
+			builder.sendRequest(requestData, new RequestCallback() 
+			{       
+				@Override  
+				public void onResponseReceived(Request request, Response response) 
+				{    
+					if (200 == response.getStatusCode()) 	
+					{   
+						final String responseXML = response.getText();
+						final GenerateReportSummaryDataResponseVO responseVO = new GenerateReportSummaryDataResponseVO(responseXML);						
+						txtFieldStatus.setText(responseVO.getReportDataFile());	              	
+					} 
+					else 
+					{   
+						displayError("Send Request", "Failed to send request: " + response.getStatusText());              	
+					}                           
+                }   
+                   
+                @Override  
+                public void onError(Request request, Throwable exception) 
+                {   	
+					displayError("Send Request", "Failed to send request: " + exception.getMessage()); 	              	
+                }   
+            });   
+        } catch (Exception e) {   e.printStackTrace();    }   
+	}			
+	
+	public void setWidgetTitle(String title) { mainPanel.setHeadingText(title); }
+	public void reset() 
+	{ 
+		txtFieldDataFilePath.clear();
+		txtFieldStatus.clear();
+	}		
+}

@@ -1,0 +1,21 @@
+package com.agena.report.gxt.client.view;
+
+import com.google.gwt.user.client.ui.IsWidget;
+import com.sencha.gxt.widget.core.client.ContentPanel;
+import com.sencha.gxt.widget.core.client.button.TextButton;
+import com.sencha.gxt.widget.core.client.form.TextField;
+
+public class GenerateSummaryReportWidget implements IsWidget
+{
+	private String title;
+	
+	private ContentPanel mainPanel;
+	
+	private TextField txtFieldDataFilePath;
+	private TextField txtFieldStatus;
+	
+	private TextButton btnReset;	
+	private TextButton btnSubmit;	
+	
+	public GenerateSummaryReportWidget(String title) { this.title = title; }	
+}

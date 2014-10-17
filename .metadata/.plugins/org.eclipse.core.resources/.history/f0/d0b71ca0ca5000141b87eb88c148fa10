@@ -1,0 +1,222 @@
+package com.agena.report.gxt.client;
+
+import static com.agena.report.gxt.client.model.Constants.DATA_SERVICE_URL;
+import static com.agena.report.gxt.client.util.DisplayUtil.displayError;
+
+import com.agena.report.gxt.client.model.RetrieveReportSummaryRequestVO;
+import com.agena.report.gxt.client.model.RetrieveReportSummaryResponseVO;
+import com.google.gwt.http.client.Request;
+import com.google.gwt.http.client.RequestBuilder;
+import com.google.gwt.http.client.RequestCallback;
+import com.google.gwt.http.client.Response;
+import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.RadioButton;
+import com.sencha.gxt.core.client.util.Margins;
+import com.sencha.gxt.widget.core.client.ContentPanel;
+import com.sencha.gxt.widget.core.client.Dialog;
+import com.sencha.gxt.widget.core.client.button.TextButton;
+import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer;
+import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer.BorderLayoutData;
+import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
+import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
+import com.sencha.gxt.widget.core.client.event.SelectEvent;
+import com.sencha.gxt.widget.core.client.event.SelectEvent.SelectHandler;
+import com.sencha.gxt.widget.core.client.form.FieldLabel;
+import com.sencha.gxt.widget.core.client.form.TextField;
+
+public class RetrieveReportDataDialog extends Dialog  
+{
+	private TextField txtFieldCustomerId;
+	private TextField txtFieldProjectId;
+	private TextField txtFieldPlateId;
+	private TextField txtFieldExperimentId;	
+	private TextField txtFieldChipId;
+	private TextField txtFieldResponse;
+	
+	private TextButton btnSubmit;
+	private TextButton btnReset;	
+	private TextButton btnExit;	
+	
+	private RadioButton radioBtnPlateSummary;	
+	private RadioButton radioBtnPrimerAdjustment;
+	private RadioButton radioBtnPlateDefinition;
+	private RadioButton radioBtnAssayTypeCount;
+
+	public RetrieveReportDataDialog() 
+	{
+		setBodyBorder(false);   
+		setHeadingText("Retrieve Report Data");      
+		setWidth(800); 				
+		setHeight(380); 				
+		setHideOnButtonClick(true);			
+		
+		final BorderLayoutContainer layout = new BorderLayoutContainer();
+		add(layout);
+		
+		// Layout - Center
+		final ContentPanel centerPanel = new ContentPanel();
+		centerPanel.setHeadingText("Request");
+		BorderLayoutData centerDataLayout = new BorderLayoutData(150);
+		centerDataLayout.setMargins(new Margins(10, 10, 10, 10));
+		centerPanel.setLayoutData(centerDataLayout);
+		layout.setCenterWidget(centerPanel);
+		
+		final VerticalLayoutContainer centerLayout = new VerticalLayoutContainer();
+		centerLayout.setBorders(false);
+		centerLayout.getElement().getStyle().setBackgroundColor("white");
+		centerPanel.add(centerLayout);			
+
+		// 1. report types
+		radioBtnPlateSummary = new RadioButton("reportType", "Plate Summary");  		
+		radioBtnPlateSummary.setValue(true);
+	    
+		radioBtnPrimerAdjustment = new RadioButton("reportType", "Primer Adjustment");	    
+		radioBtnPlateDefinition = new RadioButton("reportType", "Plate Definition");
+		radioBtnAssayTypeCount = new RadioButton("reportType", "Assay Type Count");  	    	    	    	    
+	    
+	    final HorizontalPanel hp = new HorizontalPanel();
+	    hp.setSpacing(5);
+	    hp.add(radioBtnPlateSummary);	    
+	    hp.add(radioBtnPrimerAdjustment);
+	    hp.add(radioBtnPlateDefinition);
+	    hp.add(radioBtnAssayTypeCount);				
+		
+	    centerLayout.add(new FieldLabel(hp, "Report Type"), new VerticalLayoutData(1, -1));		    
+	    
+		// 2. customer ID
+	    txtFieldCustomerId = new TextField(); 
+	    txtFieldCustomerId.setAllowBlank(false);
+		centerLayout.add(new FieldLabel(txtFieldCustomerId, "Customer ID"), new VerticalLayoutData(1, -1));
+
+		// 3. project ID
+		txtFieldProjectId = new TextField(); 
+		txtFieldProjectId.setAllowBlank(false);
+		centerLayout.add(new FieldLabel(txtFieldProjectId, "Project ID"), new VerticalLayoutData(1, -1));
+			
+		// 4. plate ID
+		txtFieldPlateId = new TextField(); 
+		txtFieldPlateId.setAllowBlank(false);
+		centerLayout.add(new FieldLabel(txtFieldPlateId, "Plate ID"), new VerticalLayoutData(1, -1));		
+		
+		// 5. experiment ID
+		txtFieldExperimentId = new TextField(); 
+		txtFieldExperimentId.setAllowBlank(false);
+		centerLayout.add(new FieldLabel(txtFieldExperimentId, "Experiment ID"), new VerticalLayoutData(1, -1));			
+		
+		// 6. chip ID
+		txtFieldChipId = new TextField(); 
+		txtFieldChipId.setAllowBlank(false);
+		centerLayout.add(new FieldLabel(txtFieldChipId, "Chip ID"), new VerticalLayoutData(1, -1));			
+		
+		// Layout - South
+		ContentPanel southPanel = new ContentPanel();
+		southPanel.setHeadingText("Response");
+		BorderLayoutData southDataLayout = new BorderLayoutData(150);
+		southDataLayout.setMargins(new Margins(5, 5, 5, 5));
+		centerPanel.setLayoutData(southDataLayout);		
+		layout.setSouthWidget(southPanel);
+
+		final VerticalLayoutContainer southLayout = new VerticalLayoutContainer();
+		
+		txtFieldResponse = new TextField(); 
+		southLayout.add(new FieldLabel(txtFieldResponse, "Response"), new VerticalLayoutData(1, -1));
+		southPanel.add(southLayout);		
+		
+		btnSubmit = new TextButton("Submit", new SelectHandler()
+		{
+			@Override
+			public void onSelect(SelectEvent event) 
+			{
+				processSubmit();
+			}
+		});
+		addButton(btnSubmit);
+
+		btnReset = new TextButton("Reset", new SelectHandler()
+		{
+			@Override
+			public void onSelect(SelectEvent event) 
+			{
+				txtFieldCustomerId.reset();
+				txtFieldProjectId.reset();
+				txtFieldPlateId.reset();
+				txtFieldExperimentId.reset();
+				txtFieldChipId.reset();
+				txtFieldResponse.reset();						
+			}
+		});	
+		addButton(btnReset);			
+		
+		btnExit = new TextButton("Exit", new SelectHandler()
+		{
+			@Override
+			public void onSelect(SelectEvent event) 
+			{
+				hide();
+			}
+		});	
+		addButton(btnExit);				
+		
+		add(layout);							
+	}
+	
+	private void processSubmit()
+	{
+		try
+		{		
+			final RetrieveReportSummaryRequestVO requestVO = new RetrieveReportSummaryRequestVO(getReportType(), txtFieldCustomerId.getText(), txtFieldProjectId.getText(), txtFieldPlateId.getText(), txtFieldExperimentId.getText(), txtFieldChipId.getText());						
+			sendRequest(requestVO.toXML());
+		}
+		catch (Exception e)
+		{
+			// TBD - log error
+			e.printStackTrace();
+		}		
+	}	
+	
+	private String getReportType()
+	{
+		if (Boolean.TRUE == radioBtnPlateSummary.getValue()) return "PlateSummary";
+		else if (Boolean.TRUE == radioBtnPrimerAdjustment.getValue()) return "PrimerAdjustmentSummary";
+		else if (Boolean.TRUE == radioBtnPlateDefinition.getValue()) return "PlateDefinitionSummary";			
+		else if (Boolean.TRUE == radioBtnAssayTypeCount.getValue()) return "AssayTypeCountSummary";				
+							
+		return null;
+	}
+		
+	private void sendRequest(String requestData)
+	{
+		final String path = DATA_SERVICE_URL + "/retrieveData"; 
+		
+		txtFieldResponse.setText("send request to " + path);
+		
+		final RequestBuilder builder = new RequestBuilder(RequestBuilder.POST, path);  
+		try 
+		{   
+			builder.setHeader("Content-Type", "application/xml");    
+			builder.sendRequest(requestData, new RequestCallback() 
+			{       
+				@Override  
+				public void onResponseReceived(Request request, Response response) 
+				{    
+					if (200 == response.getStatusCode()) 	
+					{   
+						final String xmlResponse = response.getText();
+						final RetrieveReportSummaryResponseVO reponseVO = new RetrieveReportSummaryResponseVO(xmlResponse);
+						txtFieldResponse.setText(reponseVO.getDataFile());	              	
+					} 
+					else 
+					{   
+						displayError("Send Request", "Failed to send request: " + response.getStatusText());        	
+					}                           
+                }   
+                   
+                @Override  
+                public void onError(Request request, Throwable exception) 
+                {   
+					displayError("Send Request", "Failed to send request: " + exception.getMessage());                	
+                }   
+            });   
+        } catch (Exception e) {   e.printStackTrace();    }   
+	}		
+}

@@ -1,0 +1,374 @@
+package com.agena.report.gxt.client;
+
+import static com.agena.report.gxt.client.model.Constants.GENERATE_LUNGFUSION_REPORT;
+import static com.agena.report.gxt.client.model.Constants.GENERATE_PLATE_DEFINITION_DATA;
+import static com.agena.report.gxt.client.model.Constants.GENERATE_PLATE_DEFINITION_REPORT;
+import static com.agena.report.gxt.client.model.Constants.GENERATE_PLATE_RESULT_SUMMARY_DATA;
+import static com.agena.report.gxt.client.model.Constants.GENERATE_PLATE_RESULT_SUMMARY_REPORT;
+import static com.agena.report.gxt.client.model.Constants.GENERATE_PLATE_SUMMARY_DATA;
+import static com.agena.report.gxt.client.model.Constants.GENERATE_PLATE_SUMMARY_REPORT;
+import static com.agena.report.gxt.client.model.Constants.GENERATE_PRIMER_ADJUSTMENT_DATA;
+import static com.agena.report.gxt.client.model.Constants.GENERATE_PRIMER_ADJUSTMENT_REPORT;
+import static com.agena.report.gxt.client.model.Constants.MANAGE_REPORTS;
+import static com.agena.report.gxt.client.model.Constants.RETRIEVE_ASSAY_TYPE_COUNT_DATA;
+import static com.agena.report.gxt.client.model.Constants.RETRIEVE_PLATE_DEFINITION_DATA;
+import static com.agena.report.gxt.client.model.Constants.RETRIEVE_PLATE_RESULT_SUMMARY_DATA;
+import static com.agena.report.gxt.client.model.Constants.RETRIEVE_PLATE_SUMMARY_DATA;
+import static com.agena.report.gxt.client.model.Constants.RETRIEVE_PRIMER_ADJUSTMENT_DATA;
+
+import com.agena.report.gxt.client.view.GenerateReportDataWidget;
+import com.agena.report.gxt.client.view.GenerateSummaryReportWidget;
+import com.agena.report.gxt.client.view.LungFusionReportWidget;
+import com.agena.report.gxt.client.view.ManageReportWidget;
+import com.agena.report.gxt.client.view.RetrieveReportDataWidget;
+import com.google.gwt.core.client.EntryPoint;
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.resources.client.ImageResource;
+import com.google.gwt.user.client.ui.IsWidget;
+import com.google.gwt.user.client.ui.RootPanel;
+import com.google.gwt.user.client.ui.Widget;
+import com.sencha.gxt.core.client.ValueProvider;
+import com.sencha.gxt.core.client.util.Margins;
+import com.sencha.gxt.data.shared.IconProvider;
+import com.sencha.gxt.data.shared.TreeStore;
+import com.sencha.gxt.examples.resources.client.images.ExampleImages;
+import com.sencha.gxt.examples.resources.client.model.NameImageModel;
+import com.sencha.gxt.widget.core.client.ContentPanel;
+import com.sencha.gxt.widget.core.client.container.AccordionLayoutContainer;
+import com.sencha.gxt.widget.core.client.container.AccordionLayoutContainer.AccordionLayoutAppearance;
+import com.sencha.gxt.widget.core.client.container.AccordionLayoutContainer.ExpandMode;
+import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer;
+import com.sencha.gxt.widget.core.client.container.BorderLayoutContainer.BorderLayoutData;
+import com.sencha.gxt.widget.core.client.container.MarginData;
+import com.sencha.gxt.widget.core.client.container.SimpleContainer;
+import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer;
+import com.sencha.gxt.widget.core.client.container.VerticalLayoutContainer.VerticalLayoutData;
+import com.sencha.gxt.widget.core.client.container.Viewport;
+import com.sencha.gxt.widget.core.client.form.FieldLabel;
+import com.sencha.gxt.widget.core.client.form.TextField;
+import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent;
+import com.sencha.gxt.widget.core.client.selection.SelectionChangedEvent.SelectionChangedHandler;
+import com.sencha.gxt.widget.core.client.tree.Tree;
+
+public class GxtReportApp implements IsWidget, EntryPoint 
+{
+	private ContentPanel centerPanel;
+	private SimpleContainer mainContainer;
+	TextField txtFieldStatus; 
+	
+	private RetrieveReportDataWidget widgetRetrieveReportData;
+	private GenerateReportDataWidget widgetGenerateReportData;
+	private LungFusionReportWidget widgetGenerateLungFusionReport;
+	private GenerateSummaryReportWidget widgetSummaryReport;
+	private ManageReportWidget widgetManageReport;		
+			
+	public Widget asWidget() 
+	{
+		if (mainContainer == null) 
+		{
+			mainContainer = new SimpleContainer();
+			 
+			final BorderLayoutContainer borderContainer = new BorderLayoutContainer();
+			mainContainer.add(borderContainer, new MarginData(10));
+			borderContainer.setBorders(true);
+			
+			// center panel
+			centerPanel = new ContentPanel();
+			centerPanel.setResize(false);
+			centerPanel.setBorders(false);
+			
+			final MarginData centerData = new MarginData();			
+			borderContainer.setCenterWidget(centerPanel, centerData);			
+			
+			// west panel
+			createWestPanel(borderContainer);	
+			
+			// south panel
+			// createSouthPanel(borderContainer);			
+		}
+		
+		return mainContainer;		
+	}
+	
+	public void onModuleLoad() 
+	{
+		final Viewport viewport = new Viewport();
+		viewport.add(asWidget());     
+		RootPanel.get().add(viewport);
+	}	
+	
+	private void createWestPanel(BorderLayoutContainer borderContainer)
+	{
+		final ContentPanel panel = new ContentPanel();		
+		final BorderLayoutData layoutData = new BorderLayoutData(250);
+		layoutData.setCollapsible(true);
+		layoutData.setSplit(true);
+		layoutData.setCollapseMini(true);
+		layoutData.setMargins(new Margins(0, 8, 0, 5));	
+		
+		// add to parent container
+		borderContainer.setWestWidget(panel, layoutData);	
+		
+		// panel contents:
+		final AccordionLayoutContainer subMainLayout = new AccordionLayoutContainer();      
+		subMainLayout.setExpandMode(ExpandMode.SINGLE_FILL);      
+		panel.add(subMainLayout);  		
+		
+		final AccordionLayoutAppearance appearance = GWT.<AccordionLayoutAppearance> create(AccordionLayoutAppearance.class); 
+		final ContentPanel cp = new ContentPanel(appearance);      
+		cp.setAnimCollapse(false);      
+		cp.setHeadingText("Report");      
+		subMainLayout.add(cp);      
+		subMainLayout.setActiveWidget(cp);
+		
+		final TreeStore<NameImageModel> store = new TreeStore<NameImageModel>(NameImageModel.KP);       
+		final Tree<NameImageModel, String> tree = new Tree<NameImageModel, String>(store, new ValueProvider<NameImageModel, String>() 
+		{             
+			@Override 
+			public String getValue(NameImageModel object) { return object.getName(); }             
+			
+			@Override 
+			public void setValue(NameImageModel object, String value) {}             
+			
+			@Override public String getPath() { return "name"; }          
+		});  
+		
+		tree.setIconProvider(new IconProvider<NameImageModel>() 
+		{        
+			public ImageResource getIcon(NameImageModel model) 
+			{          
+				return (null == model.getImage()) ? null : ExampleImages.INSTANCE.table();     
+			}      
+		}); 
+
+		final String IMAGE_NAME = String.valueOf("");
+		
+		// retrieve data
+		NameImageModel m = newItem("Retrieve Data", null);      
+		store.add(m);   
+						
+		store.add(m, newItem(RETRIEVE_ASSAY_TYPE_COUNT_DATA, IMAGE_NAME));  		
+		store.add(m, newItem(RETRIEVE_PLATE_DEFINITION_DATA, IMAGE_NAME));      
+		store.add(m, newItem(RETRIEVE_PLATE_SUMMARY_DATA, IMAGE_NAME));      
+		store.add(m, newItem(RETRIEVE_PLATE_RESULT_SUMMARY_DATA, IMAGE_NAME));  
+		store.add(m, newItem(RETRIEVE_PRIMER_ADJUSTMENT_DATA, IMAGE_NAME));				
+		
+		tree.setExpanded(m, true);       
+				
+		// generate data		
+		m = newItem("Generate Data", null);      
+		store.add(m);
+		   
+		store.add(m, newItem(GENERATE_PLATE_DEFINITION_DATA, IMAGE_NAME));      
+		store.add(m, newItem(GENERATE_PRIMER_ADJUSTMENT_DATA, IMAGE_NAME));      
+		store.add(m, newItem(GENERATE_PLATE_SUMMARY_DATA, IMAGE_NAME));      
+		store.add(m, newItem(GENERATE_PLATE_RESULT_SUMMARY_DATA, IMAGE_NAME));     	
+		
+		tree.setExpanded(m, true); 
+		
+		// generate reports		
+		m = newItem("Generate Reports", null);
+		store.add(m);
+		   
+		store.add(m, newItem(GENERATE_LUNGFUSION_REPORT, IMAGE_NAME)); 		
+		store.add(m, newItem(GENERATE_PLATE_DEFINITION_REPORT, IMAGE_NAME));           
+		store.add(m, newItem(GENERATE_PLATE_SUMMARY_REPORT, IMAGE_NAME));      
+		store.add(m, newItem(GENERATE_PLATE_RESULT_SUMMARY_REPORT, IMAGE_NAME));
+		store.add(m, newItem(GENERATE_PRIMER_ADJUSTMENT_REPORT, IMAGE_NAME)); 		 		
+		
+		tree.setExpanded(m, true); 		
+				
+		// manage reports		
+		m = newItem(MANAGE_REPORTS, null);      
+		store.add(m);        		
+		
+		tree.setExpanded(m, true);
+		
+		// add tree to panel
+		cp.add(tree);		
+		
+		// handler events
+		final SelectionChangedHandler<NameImageModel> handler = new SelectionChangedHandler<NameImageModel>() 
+		{ 
+			@Override public void onSelectionChanged(SelectionChangedEvent<NameImageModel> event) 
+			{ 
+				final String itemName = event.getSource().getSelectedItem().getName();
+				
+				switch (itemName)
+				{
+					case RETRIEVE_ASSAY_TYPE_COUNT_DATA:
+						showRetrieveReportDataWidget(itemName, "Assay");							
+						break;		
+						
+					case RETRIEVE_PLATE_DEFINITION_DATA:
+						showRetrieveReportDataWidget(itemName, "PlateDefinitionSummary");							
+						break;		
+						
+					case RETRIEVE_PLATE_SUMMARY_DATA:
+						showRetrieveReportDataWidget(itemName, "PlateSummary");							
+						break;								
+						
+					case RETRIEVE_PLATE_RESULT_SUMMARY_DATA:
+						showRetrieveReportDataWidget(itemName, "PlateResult");						
+						break;								
+						
+					case RETRIEVE_PRIMER_ADJUSTMENT_DATA:						
+						showRetrieveReportDataWidget(itemName, "PrimerAdjustmentSummary");											
+					break;			
+					
+					case GENERATE_PLATE_DEFINITION_DATA:
+						showGenerateReportDataWidget(itemName, "PlateDefinitionSummary");
+						break;						
+						
+					case GENERATE_PRIMER_ADJUSTMENT_DATA:
+						showGenerateReportDataWidget(itemName, "PrimerAdjustmentSummary");
+						break;						
+						
+					case GENERATE_PLATE_SUMMARY_DATA:
+						showGenerateReportDataWidget(itemName, "PlateSummary");
+						break;						
+						
+					case GENERATE_PLATE_RESULT_SUMMARY_DATA:						
+						showGenerateReportDataWidget(itemName, "PlateResult");
+						break;
+						
+					case GENERATE_LUNGFUSION_REPORT:
+						showLungFusionReportWidget(itemName);
+						break; 
+						
+					case GENERATE_PLATE_DEFINITION_REPORT:
+						showSummaryReportWidget(itemName, "PlateDefinitionSummary");
+						break;
+						
+					case GENERATE_PLATE_SUMMARY_REPORT:
+						showSummaryReportWidget(itemName, "PlateSummary");	
+						break;
+						
+					case GENERATE_PLATE_RESULT_SUMMARY_REPORT:
+						showSummaryReportWidget(itemName, "PlateResult");	
+						break;						
+						
+					case GENERATE_PRIMER_ADJUSTMENT_REPORT:	
+						showSummaryReportWidget(itemName, "PrimerAdjustmentSummary");	
+						break;												
+						
+					case MANAGE_REPORTS:
+						showManageReportWidget(itemName);
+						break;
+				}						
+			} 
+		}; 
+		
+		tree.getSelectionModel().addSelectionChangedHandler(handler);		
+	}
+	
+	private void createSouthPanel(BorderLayoutContainer borderContainer)
+	{
+		final ContentPanel panel = new ContentPanel();
+		final BorderLayoutData layoutData = new BorderLayoutData(100);
+		layoutData.setMargins(new Margins(8));
+		layoutData.setCollapsible(true);
+		layoutData.setCollapseMini(true);	
+		
+		// add to parent container		
+		borderContainer.setSouthWidget(panel, layoutData);		
+		
+		// panel contents:
+		final VerticalLayoutContainer subMainLayout = new VerticalLayoutContainer();
+		subMainLayout.setBorders(false);
+		subMainLayout.getElement().getStyle().setBackgroundColor("white");
+		panel.add(subMainLayout);				
+						
+		if (txtFieldStatus == null)
+		{
+			txtFieldStatus = new TextField(); 
+			txtFieldStatus.setAllowBlank(false);
+			subMainLayout.add(new FieldLabel(txtFieldStatus, "Status"), new VerticalLayoutData(1, -1));
+		}
+	}
+	
+	private NameImageModel newItem(String text, String iconStyle) 
+	{	
+		return new NameImageModel(text, iconStyle);  
+	}  	
+	
+	private void showRetrieveReportDataWidget(String title, String reportType)
+	{
+		if (widgetRetrieveReportData == null)
+		{
+			widgetRetrieveReportData = new RetrieveReportDataWidget(title, reportType);			
+		}
+		else
+		{
+			widgetRetrieveReportData.setWidgetTitle(title);
+			widgetRetrieveReportData.reset();
+		}
+		
+		centerPanel.setWidget(widgetRetrieveReportData);
+	}
+	
+	private void showGenerateReportDataWidget(String title, String reportTtype)
+	{
+		if (widgetGenerateReportData == null)
+		{
+			widgetGenerateReportData = new GenerateReportDataWidget(title, reportTtype);			
+		}
+		else
+		{
+			widgetGenerateReportData.setWidgetTitle(title);
+			widgetGenerateReportData.reset();
+		}
+		
+		centerPanel.setWidget(widgetGenerateReportData);
+	}	
+	
+	private void showLungFusionReportWidget(String title)
+	{
+		if (widgetGenerateLungFusionReport == null)
+		{
+			widgetGenerateLungFusionReport = new LungFusionReportWidget(title);			
+		}
+		else
+		{
+			widgetGenerateLungFusionReport.setWidgetTitle(title);
+			widgetGenerateLungFusionReport.reset();
+		}
+		
+		centerPanel.setWidget(widgetGenerateLungFusionReport);
+	}	
+	
+	private void showSummaryReportWidget(String title, String reportType)
+	{
+		if (widgetSummaryReport == null)
+		{
+			widgetSummaryReport = new GenerateSummaryReportWidget(title, reportType);			
+		}
+		else
+		{
+			widgetSummaryReport.setWidgetTitle(title);
+			widgetSummaryReport.reset();
+		}
+		
+		centerPanel.setWidget(widgetSummaryReport);
+	}		
+	
+	private void showManageReportWidget(String title)
+	{
+		if (widgetManageReport == null)
+		{
+			widgetManageReport = new ManageReportWidget(title);			
+		}
+		else
+		{
+			widgetManageReport.setWidgetTitle(title);
+			widgetManageReport.reset();
+		}
+		
+		centerPanel.setWidget(widgetManageReport);
+				
+		/*
+		final GetReportListDialog dlg = new GetReportListDialog();
+		dlg.show();
+		*/
+	}		
+}

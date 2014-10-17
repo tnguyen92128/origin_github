@@ -1,0 +1,1 @@
+INDEX VERSION 1.3+C:\dev_agena_report_client\.metadata\.plugins\org.eclipse.wst.jsdt.core\indexes

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" output="test-classes" path="test"/>
+	<classpathentry kind="con" path="com.google.appengine.eclipse.core.GAE_CONTAINER"/>
+	<classpathentry kind="con" path="com.google.gwt.eclipse.core.GWT_CONTAINER"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="/common-lib/GXT_LIB/aopalliance-1.0.jar"/>
+	<classpathentry kind="lib" path="/common-lib/GXT_LIB/bval-core-0.2-incubating.jar"/>
+	<classpathentry kind="lib" path="/common-lib/GXT_LIB/bval-jsr303-0.2-incubating.jar"/>
+	<classpathentry kind="lib" path="/common-lib/GXT_LIB/guice-3.0-rc2.jar"/>
+	<classpathentry kind="lib" path="/common-lib/GXT_LIB/guice-assistedinject-3.0-rc2.jar"/>
+	<classpathentry kind="lib" path="/common-lib/GXT_LIB/gxt-chart.jar"/>
+	<classpathentry kind="lib" path="/common-lib/GXT_LIB/gxt-examples-3.0.0-beta1-classes.jar"/>
+	<classpathentry kind="lib" path="/common-lib/GXT_LIB/gxt-examples-desktop.jar"/>
+	<classpathentry kind="lib" path="/common-lib/GXT_LIB/gxt-examples.war"/>
+	<classpathentry kind="lib" path="/common-lib/GXT_LIB/gxt-legacy.jar"/>
+	<classpathentry kind="lib" path="/common-lib/GXT_LIB/gxt-theme-neptune.jar"/>
+	<classpathentry kind="lib" path="/common-lib/GXT_LIB/gxt.jar"/>
+	<classpathentry kind="lib" path="/common-lib/GXT_LIB/javax.inject-1.jar"/>
+	<classpathentry kind="lib" path="/common-lib/GXT_LIB/json-20090211.jar"/>
+	<classpathentry kind="lib" path="/common-lib/GXT_LIB/openjpa-all-2.1.0.jar"/>
+	<classpathentry kind="output" path="war/WEB-INF/classes"/>
+</classpath>

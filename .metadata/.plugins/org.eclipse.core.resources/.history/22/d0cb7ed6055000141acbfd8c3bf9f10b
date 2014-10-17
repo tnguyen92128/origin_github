@@ -1,0 +1,43 @@
+package com.agena.report.gxt.client.view;
+
+import com.google.gwt.user.client.ui.IsWidget;
+import com.google.gwt.user.client.ui.Widget;
+import com.sencha.gxt.widget.core.client.ContentPanel;
+import com.sencha.gxt.widget.core.client.button.TextButton;
+import com.sencha.gxt.widget.core.client.form.TextField;
+
+public class ManageReportWidget implements IsWidget
+{
+	private String title;
+	
+	private ContentPanel mainPanel;
+	
+	private TextField txtFieldDataFilePath;
+	private TextField txtFieldStatus;
+	
+	private TextButton btnReset;	
+	private TextButton btnSubmit;	
+	
+	public ManageReportWidget(String title) { this.title = title; }	
+	
+	public Widget asWidget() 
+	{
+		if (mainPanel == null)
+		{
+			mainPanel = new ContentPanel();			
+			mainPanel.setBodyBorder(false);
+			mainPanel.setBorders(false);			
+			mainPanel.setPixelSize(400, 600);				
+			mainPanel.setHeadingText(title);			
+		}
+		
+		return mainPanel; 
+	}
+	
+	public void setWidgetTitle(String title) { mainPanel.setHeadingText(title); }
+	public void reset() 
+	{ 
+		txtFieldDataFilePath.clear();
+		txtFieldStatus.clear();
+	}	
+}

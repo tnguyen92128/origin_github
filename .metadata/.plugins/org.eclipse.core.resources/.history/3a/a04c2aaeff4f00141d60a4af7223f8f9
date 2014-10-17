@@ -1,0 +1,13 @@
+package com.agena.report.gxt.client.model;
+
+public class Constants 
+{
+	public static final String DATA_SERVICE_URL = "http://localhost:8080/data";	
+	public static final String REPORT_SERVICE_URL = "http://localhost:8080/report";		
+
+	public static final String RETRIEVE_ASSAY_TYPE_COUNT_DATA     = "Retrieve Assay Type Count Data";
+	public static final String RETRIEVE_PLATE_DEFINITION_DATA     = "Retrieve Plate Definition Data";
+	public static final String RETRIEVE_PLATE_SUMMARY_DATA        = "Retrieve Plate Summary data";	
+	public static final String RETRIEVE_PLATE_RESULT_SUMMARY_DATA = "Retrieve Plate Result Summary Data";
+	public static final String RETRIEVE_PRIMER_ADJUSTMENT_DATA    = "Retrieve Primer Adjustment Data";			
+}

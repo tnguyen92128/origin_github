@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring accessors="true" comment="Delete 3 elements from project &apos;SampleModule&apos;&#x0D;&#x0A;- Original project: &apos;SampleModule&apos;&#x0D;&#x0A;- Original elements:&#x0D;&#x0A;     com.durasoft.client.GreetingService.java&#x0D;&#x0A;     com.durasoft.client.GreetingServiceAsync.java&#x0D;&#x0A;     com.durasoft.client.SampleModule.java" description="Delete elements" element1="/src&lt;com.durasoft.client{GreetingServiceAsync.java" element2="/src&lt;com.durasoft.client{GreetingService.java" element3="/src&lt;com.durasoft.client{SampleModule.java" elements="3" flags="589830" id="org.eclipse.jdt.ui.delete" resources="0" stamp="1411076929308" subPackages="false" version="1.0"/>
+</session>
